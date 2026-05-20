@@ -3,7 +3,7 @@ import { useState, useContext } from 'react';
 import './App.css';
 import Landing from './components/Landing';
 import Videoplayer from './components/videoPlayer';
-import Searchresults from './components/searchResultsearchresults';
+import SearchResults from './components/searchResults';
 import Login from './components/Login';
 import Register from './components/Register';
 import Profile from './components/Profile';
