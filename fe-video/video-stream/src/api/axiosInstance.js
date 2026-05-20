@@ -1,9 +1,9 @@
-// FILE: src/api/axiosInstance.js
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:3000', // Pointing to your Express backend
-    withCredentials: true, // CRITICAL: This allows HttpOnly cookies to be sent
+    // Look for the Vercel variable. If it doesn't exist (like on your laptop), use localhost!
+    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000', 
+    withCredentials: true, 
 });
 
 export default api;

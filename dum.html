@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Protect</title>
+</head>
+<body>
+
+<h1 style="font-family:sans-serif; margin:2rem;">🔒 Protected: any key or combo → 3s blackout</h1>
+
+<div id="blackout" style="
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: black;
+  z-index: 99999;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-family: monospace;
+  font-size: 2rem;
+  flex-direction: column;
+  gap: 1rem;
+">
+  <div>🔐</div>
+  <div style="font-size:1rem;">SCREEN LOCKED · 3s</div>
+</div>
+
+<script>
+  (function(){
+    const DELAY = 3000;          // 3 seconds blackout
+    const blackoutDiv = document.getElementById('blackout');
+    let active = false;
+    let timer = null;
+
+    // track ANY currently pressed keys (all keys, not just modifiers)
+    let pressedKeys = new Set();
+
+    function log(msg) { console.log(`[${new Date().toLocaleTimeString()}] ${msg}`); }
+
+    function showBlackout(reason) {
+      if (active) return;          // already locked
+      active = true;
+      blackoutDiv.style.display = 'flex';
+      log(`⚫ BLACKOUT — ${reason}`);
+      // restore after DELAY ms — always
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        if (active) {
+          blackoutDiv.style.display = 'none';
+          active = false;
+          log(`🟢 UNLOCKED after ${DELAY/1000}s`);
+          // do NOT clear pressedKeys here; let keyup handle naturally
+        }
+        timer = null;
+      }, DELAY);
+    }
+
+    // helper: check if TWO or MORE keys are down at same time
+    function checkAnyTwoKeys() {
+      // get all real keys (ignore 'Meta', 'Shift' etc but count them too)
+      const totalPressed = pressedKeys.size;
+      if (totalPressed >= 2 && !active) {
+        const keysList = Array.from(pressedKeys);
+        showBlackout(`2+ keys: ${keysList.slice(0,3).join('+')}${keysList.length>3 ? '..' : ''}`);
+        return true;
+      }
+      return false;
+    }
+
+    // KEYDOWN — triggers on:
+    // 1) any MODIFIER key (single)
+    // 2) any two keys pressed together (any keys, including letters/numbers)
+    // 3) PrintScreen
+    document.addEventListener('keydown', (e) => {
+      const key = e.key;
+      // ignore repeated events (auto-repeat)
+      if (pressedKeys.has(key)) return;
+
+      // add to pressed set
+      pressedKeys.add(key);
+
+      // --- SINGLE MODIFIER protection (Meta, Shift, Ctrl, Alt)
+      const isModifier = (key === 'Meta' || key === 'Shift' || key === 'Control' || key === 'Alt');
+      
+      // PrintScreen direct
+      if (e.code === 'PrintScreen' || key === 'PrintScreen') {
+        e.preventDefault();
+        if (!active) showBlackout(`PrintScreen key`);
+        return;
+      }
+
+      // SINGLE modifier key pressed → blackout
+      if (isModifier && !active) {
+        e.preventDefault();
+        showBlackout(`modifier: ${key}`);
+        return;
+      }
+
+      // TWO OR MORE KEYS combo (any keys) → blackout
+      // but if it's just a modifier alone we already handled above.
+      // Also avoid double trigger when already active
+      if (!active && pressedKeys.size >= 2) {
+        e.preventDefault();
+        const combos = Array.from(pressedKeys);
+        showBlackout(`combo (${combos.slice(0,3).join('+')})`);
+        return;
+      }
+
+      // even if already active, we log but no double blackout needed
+      if (active && pressedKeys.size >= 2) {
+        log(`⏸ combo while locked: ${Array.from(pressedKeys).join('+')} (ignored)`);
+      }
+    });
+
+    // KEYUP — remove key from set, but never unlocks early
+    document.addEventListener('keyup', (e) => {
+      const key = e.key;
+      pressedKeys.delete(key);
+      // optional log for debugging
+      if (key === 'Meta' || key === 'Shift' || key === 'Control' || key === 'Alt') {
+        log(`🔓 modifier released: ${key} | still down: ${pressedKeys.size}`);
+      } else {
+        log(`🔓 key up: ${key} | active keys: ${pressedKeys.size}`);
+      }
+      // never unlock here — only the 3s timer unlocks
+    });
+
+    // EXTRA: window blur (snipping tool, alt+tab, external screenshot)
+    window.addEventListener('blur', () => {
+      if (!active) showBlackout('window blur');
+    });
+
+    // tab hidden (screenshots / recording)
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && !active) showBlackout('tab hidden');
+    });
+
+    // block right-click context menu (extra protection)
+    document.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      if (!active) showBlackout('right-click');
+    });
+
+    // reset pressed keys when window gains focus (avoid stuck state)
+    window.addEventListener('focus', () => {
+      pressedKeys.clear();
+      if (active) {
+        // leave blackout active, timer will restore
+        log(`window focused, blackout still active until timer ends`);
+      } else {
+        log(`window focused, ready`);
+      }
+    });
+
+    log('✅ READY: ANY modifier key OR any two keys together → 3s blackout');
+  })();
+</script>
+</body>
+</html>

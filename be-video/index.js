@@ -14,7 +14,9 @@ import cookieParser from "cookie-parser";
 const app=express()
 app.use(cookieParser());
 app.use(cors({
-    origin: 'http://localhost:5173', // Your React Vite port
+    origin: ['http://localhost:5173',
+        'https://om3ga.netlify.app'
+    ],
     credentials: true,               // Explicitly allow cookies
 }));
 app.use(express.json());
