@@ -11,11 +11,8 @@ const Profile = ({ setactive, setid }) => {
     useEffect(() => {
         const fetchAndHydrate = async () => {
             try {
-                // 1. Fetch raw IDs (Fixed spelling and removed /api prefix)
                 const response = await api.get('/watchlist'); 
                 const rawWatchlist = response.data;
-                
-                // 2. Hydrate the data
                 await hydrateWatchlist(rawWatchlist);
             } catch (err) {
                 console.error("Failed to load profile data:", err);
@@ -35,7 +32,6 @@ const Profile = ({ setactive, setid }) => {
 
         try {
             const hydrationPromises = rawList.map(async (item) => {
-                // ADDED: .toLowerCase() so TMDB doesn't throw a 404 error!
                 const response = await api.get('/details', {
                     params: { id: item.media_id, selectedMedia: item.media_type.toLowerCase() }
                 });
@@ -56,13 +52,9 @@ const Profile = ({ setactive, setid }) => {
         }
     };
 
-    // NEW: Update Status Function
     const updateWatchStatus = async (mediaId, newStatus) => {
         try {
-            // Send the update to the backend
             await api.put('/watchlist', { mediaId, status: newStatus });
-            
-            // Optimistically update the UI instantly
             setWatchlist(prev => prev.map(item => 
                 item.id === mediaId ? { ...item, watchStatus: newStatus } : item
             ));
@@ -84,19 +76,22 @@ const Profile = ({ setactive, setid }) => {
     }
 
     return (
-        <div style={{ padding: '100px 5%', color: 'white', minHeight: '100vh', background: '#050505' }}>
+        /* FIXED: Replaced inline styles with CSS classes */
+        <div className="profile-container" style={{ minHeight: '100vh', background: '#050505', color: 'white' }}>
+            
             {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '50px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                    <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#E50914', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '30px', fontWeight: 'bold' }}>
+            <div className="profile-header">
+                <div className="profile-info">
+                    <div className="profile-avatar-large">
                         {user.username.charAt(0).toUpperCase()}
                     </div>
-                    <div>
-                        <h1 style={{ margin: 0, fontSize: '32px' }}>{user.username}'s Profile</h1>
-                        <p style={{ color: '#aaa', margin: '5px 0 0 0' }}>Member since 2026</p>
+                    <div className="profile-details">
+                        <h1>{user.username}'s Profile</h1>
+                        <p>Member since 2026</p>
                     </div>
                 </div>
-                <div style={{ display: 'flex', gap: '15px' }}>
+                
+                <div className="profile-actions">
                     <button onClick={() => setactive('landing')} style={{ background: 'none', border: '1px solid #444', color: 'white', padding: '10px 20px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
                         Back to Browse
                     </button>
@@ -114,14 +109,13 @@ const Profile = ({ setactive, setid }) => {
             ) : watchlist.length === 0 ? (
                 <p style={{ color: '#aaa', fontSize: '18px' }}>Your watchlist is empty. Go add some movies!</p>
             ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
+                /* FIXED: Grid layout is now controlled by index.css */
+                <div className="watchlist-grid">
                     {watchlist.map(item => (
                         <div key={item.id} className="media-card" onClick={() => { setid(item.id); setactive('player'); }}>
                             <div className="poster-container" style={{ aspectRatio: '2/3' }}>
                                 <img src={`https://image.tmdb.org/t/p/w500${item.poster_path}`} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 <div className="poster-overlay">
-                                    
-                                    {/* NEW: Interactive Dropdown Menu */}
                                     <select 
                                         value={item.watchStatus}
                                         onClick={(e) => e.stopPropagation()} 
@@ -137,7 +131,6 @@ const Profile = ({ setactive, setid }) => {
                                         <option value="COMPLETED">Completed</option>
                                         <option value="DROPPED">Dropped</option>
                                     </select>
-
                                 </div>
                             </div>
                             <div className="meta">

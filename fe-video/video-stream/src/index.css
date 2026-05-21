@@ -268,3 +268,92 @@ html, body {
     gap: 12px; 
   }
 }
+/* =========================================
+   7. PROFILE PAGE RESPONSIVENESS
+   ========================================= */
+.profile-container {
+  padding: 20px 4vw 100px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header Section */
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  flex-wrap: wrap; /* Crucial: Allows stacking if the screen is too thin */
+  gap: 20px;
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.profile-avatar-large {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--accent-red);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.profile-details h1 {
+  margin: 0 0 5px 0;
+  font-size: 28px;
+}
+
+.profile-details p {
+  margin: 0;
+  color: #a3a3a3;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 15px;
+}
+
+/* Watchlist Grid Layout */
+.watchlist-grid {
+  display: grid;
+  /* Automatically fits as many 200px posters as possible on desktop */
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 25px;
+}
+
+/* =========================================
+   📱 PROFILE MOBILE OVERRIDES 📱
+   ========================================= */
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .profile-actions {
+    width: 100%;
+    /* Pushes the two buttons to opposite edges of the screen */
+    justify-content: space-between; 
+  }
+
+  .profile-avatar-large {
+    width: 60px;
+    height: 60px;
+    font-size: 28px;
+  }
+
+  /* The Magic Fix: Forces a clean 2-column grid on mobile phones! */
+  .watchlist-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+}
