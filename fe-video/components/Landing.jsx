@@ -46,28 +46,33 @@ const Landing = ({ setactive, setid, selectedMedia, setSelectedMedia, setresults
   return (
     <div className="landing-root">
       <nav className="nav-container">
-        {/* Logo Left */}
-        <div className="nav-logo" style={{ color: '#E50914', fontWeight: '900', fontSize: '24px', position: 'absolute', left: '50px' }}>
-          MOVIEFLIX
+        {/* 1. Logo pushes perfectly to the left on Desktop */}
+        <div className="nav-logo" style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', color: '#E50914', fontWeight: '900', fontSize: '24px' }}>
+          MOONWATCH
         </div>
 
-        {/* Centered Pill */}
-        <div className="nav-pill">
+        {/* 2. Toggle Pill stays dead center */}
+        <div className="nav-pill" style={{ flex: '0 1 auto' }}>
           <div className="nav-slider" style={{ left: selectedMedia === 'movie' ? '4px' : 'calc(50% + 1px)' }} />
           <button className={`nav-item ${selectedMedia === 'movie' ? 'active' : ''}`} onClick={() => setSelectedMedia('movie')}>Movies</button>
           <button className={`nav-item ${selectedMedia === 'tv' ? 'active' : ''}`} onClick={() => setSelectedMedia('tv')}>TV Shows</button>
         </div>
 
-        {/* Search Right */}
-        <form onSubmit={handleSearch} style={{ position: 'absolute', right: '50px' }}>
-          <input 
-            type="text" 
-            placeholder="Search..." 
-            className="search-input-premium"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-          />
-        </form>
+        {/* 3. Search Bar & Login push perfectly to the right on Desktop */}
+        <div className="nav-actions">
+          <form onSubmit={handleSearch} style={{ width: '100%' }}>
+            <input 
+              type="text" 
+              placeholder="Search..." 
+              className="search-input-premium"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+          </form>
+          <button className="login-btn" onClick={() => setactive('login')}>
+            Sign In
+          </button>
+        </div>
       </nav>
 
       <main className="main-content">

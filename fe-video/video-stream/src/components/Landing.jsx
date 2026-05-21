@@ -1,9 +1,12 @@
 // FILE: src/components/Landing.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import api from '../api/axiosInstance';
 import '../index.css';
+import { AuthContext } from '../context/AuthContext';
 
 const Landing = ({ setactive, setid, selectedMedia, setSelectedMedia, setresults }) => {
+  const { user } = useContext(AuthContext); 
+  
   const [data, setData] = useState({ trending: [], topRated: [], loading: true });
   const [searchInput, setSearchInput] = useState("");
   const [toast, setToast] = useState(null);
@@ -75,25 +78,52 @@ const Landing = ({ setactive, setid, selectedMedia, setSelectedMedia, setresults
       )}
 
       <nav className="nav-container">
-        <div className="nav-logo" style={{ color: '#E50914', fontWeight: '900', fontSize: '24px', position: 'absolute', left: '50px' }}>
-          MOVIEFLIX
+        {/* 1. Logo */}
+        <div className="nav-logo" style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', color: '#E50914', fontWeight: '900', fontSize: '24px' }}>
+          MOONWATCH
         </div>
 
-        <div className="nav-pill">
+        {/* 2. Toggle Pill */}
+        <div className="nav-pill" style={{ flex: '0 1 auto' }}>
           <div className="nav-slider" style={{ left: selectedMedia === 'movie' ? '4px' : 'calc(50% + 1px)' }} />
           <button className={`nav-item ${selectedMedia === 'movie' ? 'active' : ''}`} onClick={() => setSelectedMedia('movie')}>Movies</button>
           <button className={`nav-item ${selectedMedia === 'tv' ? 'active' : ''}`} onClick={() => setSelectedMedia('tv')}>TV Shows</button>
         </div>
 
-        <form onSubmit={handleSearch} style={{ position: 'absolute', right: '50px' }}>
-          <input 
-            type="text" 
-            placeholder="Search..." 
-            className="search-input-premium"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-          />
-        </form>
+        {/* 3. Search Bar & Auth (Side-by-side on mobile!) */}
+        <div className="nav-actions">
+          <form onSubmit={handleSearch} className="search-form">
+            <input 
+              type="text" 
+              placeholder="Search..." 
+              className="search-input-premium"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+          </form>
+
+          {/* DYNAMIC AUTH BUTTON */}
+          {user ? (
+            <div 
+              onClick={() => setactive('profile')}
+              style={{ 
+                  width: '40px', height: '40px', borderRadius: '50%', 
+                  background: '#E50914', color: 'white', 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                  fontWeight: 'bold', fontSize: '18px', cursor: 'pointer',
+                  boxShadow: '0 4px 10px rgba(229, 9, 20, 0.4)',
+                  flexShrink: 0 
+              }}
+              title="Go to Profile"
+            >
+              {user?.username?.charAt(0)?.toUpperCase() || 'U'}
+            </div>
+          ) : (
+            <button className="login-btn" onClick={() => setactive('login')}>
+              Sign In
+            </button>
+          )}
+        </div>
       </nav>
 
       <main className="main-content">

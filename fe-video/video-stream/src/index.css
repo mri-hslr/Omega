@@ -1,27 +1,40 @@
+/* =========================================
+   1. GLOBAL RESET & VARIABLES
+   ========================================= */
+* {
+  box-sizing: border-box;
+}
+
 :root {
   --bg-color: #050505;
   --accent-red: #E50914;
-  --card-width: 260px; /* Bigger, aesthetic thumbnails */
+  --card-width: 260px;
   --ease: cubic-bezier(0.2, 0, 0, 1);
 }
 
-body {
+html, body {
   margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
   background-color: var(--bg-color);
   color: white;
   font-family: -apple-system, system-ui, sans-serif;
-  overflow-x: hidden;
 }
 
-/* Centered Floating Navbar */
+/* =========================================
+   2. NAVIGATION BAR
+   ========================================= */
 .nav-container {
   display: flex;
   justify-content: center;
-  padding: 40px 0;
+  align-items: center;
+  gap: 20px;
+  padding: 30px 20px;
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: linear-gradient(to bottom, var(--bg-color) 70%, transparent);
+  background: linear-gradient(to bottom, var(--bg-color) 80%, transparent);
 }
 
 .nav-pill {
@@ -31,7 +44,8 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 50px;
   padding: 4px;
-  width: 320px;
+  width: 100%;
+  max-width: 320px;
   backdrop-filter: blur(10px);
 }
 
@@ -63,9 +77,63 @@ body {
   color: white;
 }
 
-/* Content Spacing */
+/* =========================================
+   3. RIGHT SIDE ACTIONS (Search + Login)
+   ========================================= */
+.nav-actions {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 15px;
+}
+
+.search-form {
+  width: 100%;
+  max-width: 250px;
+  transition: all 0.3s ease;
+}
+
+.search-input-premium {
+  background: transparent; /* FIXED: Removed ugly grey, matches website background */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 10px 20px;
+  color: white;
+  outline: none;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.search-input-premium:focus {
+  border-color: var(--accent-red);
+  background: transparent;
+}
+
+.login-btn {
+  background-color: var(--accent-red);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  white-space: nowrap;
+}
+
+.login-btn:hover {
+  background-color: #b80710;
+}
+
+/* =========================================
+   4. MAIN CONTENT & HORIZONTAL SCROLL
+   ========================================= */
 .main-content {
   padding: 0 4vw 100px;
+  display: flex;
+  flex-direction: column;
 }
 
 .shelf {
@@ -79,20 +147,20 @@ body {
   letter-spacing: -0.5px;
 }
 
-/* Horizontal Scroll logic */
 .horizontal-scroll {
   display: flex;
-  gap: 25px;
-  overflow-x: scroll;
+  gap: 20px;
+  overflow-x: auto;
   padding: 10px 0 30px;
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none;
 }
-
 .horizontal-scroll::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
+  display: none;
 }
 
-/* Premium Media Card */
+/* =========================================
+   5. MOVIE CARDS
+   ========================================= */
 .media-card {
   min-width: var(--card-width);
   cursor: pointer;
@@ -105,7 +173,7 @@ body {
   aspect-ratio: 2/3;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
 .poster-container img {
@@ -135,15 +203,12 @@ body {
 .media-card:hover {
   transform: translateY(-10px);
 }
-
 .media-card:hover .poster-container img {
   transform: scale(1.1);
 }
-
 .media-card:hover .poster-overlay {
   opacity: 1;
 }
-
 .media-card:hover .play-btn {
   transform: scale(1);
 }
@@ -168,28 +233,38 @@ body {
   display: block;
 }
 
-.loader {
-  height: 60vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  color: #666;
-}
+/* =========================================
+   6. 📱 MOBILE RESPONSIVE MAGIC 📱
+   ========================================= */
+@media (max-width: 768px) {
+  :root {
+    --card-width: 140px; 
+  }
 
-.search-input-premium {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 10px 20px;
-  color: white;
-  outline: none;
-  width: 200px;
-  transition: all 0.3s ease;
-}
+  .nav-container {
+    flex-direction: column;
+    padding: 15px;
+    gap: 15px;
+  }
 
-.search-input-premium:focus {
-  width: 280px;
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--accent-red);
+  /* FIXED: Side-by-Side Search and Profile on Mobile! */
+  .nav-actions {
+    flex-direction: row; 
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .search-form {
+    flex: 1; /* Forces the search bar to fill the space left by the avatar */
+    max-width: 100%;
+  }
+
+  .shelf-title {
+    font-size: 18px; 
+  }
+
+  .horizontal-scroll {
+    gap: 12px; 
+  }
 }
