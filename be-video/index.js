@@ -63,10 +63,10 @@ app.post("/signup",async (req,res)=>{
       const token=jwt.sign({id:newUser.rows[0].id},process.env.JWT_SECRET,{expiresIn:"7d"})
       res.cookie(
         "token",token,{
-          httpOnly:true,
-          secure:process.env.NODE_ENV==="production",
-          sameSite:"strict",
-          maxAge:7*24*60*60*1000
+         httpOnly: true,
+        secure: true,          // MUST be true for cross-site cookies (requires HTTPS)
+        sameSite: "none",      // MUST be 'none' to allow Vercel to talk to Render
+        maxAge: 24 * 60 * 60 * 1000
         }
       )
 
@@ -92,9 +92,9 @@ app.post("/login", async (req, res) => {
         
         res.cookie("token", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 7 * 24 * 60 * 60 * 1000
+            secure: true,          // MUST be true for cross-site cookies (requires HTTPS)
+            sameSite: "none",      // MUST be 'none' to allow Vercel to talk to Render
+            maxAge: 24 * 60 * 60 * 1000
         });
 
         res.status(200).json({ message: "Login successful", user: { id: user.id, username: user.username } });
