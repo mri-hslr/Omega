@@ -49,17 +49,11 @@ const HeroSlider = ({ movies, setid, setactive, selectedMedia }) => {
   }, [movieIdsString, selectedMedia]); 
 
   // THE FIX 1: Changed from 8000 (8s) to 18000 (18s)
-useEffect(() => {
+  useEffect(() => {
     if (topFive.length === 0) return;
-    
-    // DEBUGGING: This proves exactly when the timer starts
-    console.log("🎬 Slider timer started! Waiting 18 seconds...");
-
     const timer = setInterval(() => {
-      console.log("⏱️ 18 seconds passed! Changing slide...");
       setCurrentIndex((prevIndex) => (prevIndex + 1) % topFive.length);
-    }, 18000); // 18000ms = 18 seconds
-    
+    }, 18000); 
     return () => clearInterval(timer);
   }, [topFive.length]);
 
