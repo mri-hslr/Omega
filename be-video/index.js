@@ -158,26 +158,37 @@ app.get("/search",async (req,res)=>{
 })
 
 
-app.get("/details",async(req,res)=>{
-    const movie_id=req.query.id
-    const selectedMedia=req.query.selectedMedia
-    const response = await axios.get(
-        `https://api.themoviedb.org/3/${selectedMedia}/${movie_id}`,
-        {
-          httpsAgent: tmdbAgent,
-          headers: {
-            Authorization: `Bearer ${process.env.TOKEN}`,
-          }, 
-        }
-      );
-    //   res.json({
-    //     episode_count:response.data.number_of_episodes,
-    //     season_count:response.data.number_of_seasons
-    //   })
-    
-    res.send(response.data);
-})
+app.get("/details", async (req, res) => {
+    try {
+        const movie_id = req.query.id;
+        const selectedMedia = req.query.selectedMedia || 'movie';
+        
+        // THE FIX: Hardcode the instruction directly into the URL string!
+        // This makes it impossible for Axios to drop or ignore it.
+        const tmdbUrl = `https://api.themoviedb.org/3/${selectedMedia}/${movie_id}?append_to_response=videos`;
+        
+        console.log(`\n[BACKEND] Requesting TMDB -> ${tmdbUrl}`);
 
+        const response = await axios.get(tmdbUrl, {
+            httpsAgent: tmdbAgent,
+            headers: {
+                Authorization: `Bearer ${process.env.TOKEN}`,
+            }
+        });
+        
+        // DEBUGGING: Tell the terminal if TMDB actually attached the videos
+        if (response.data.videos) {
+            console.log(`[BACKEND] SUCCESS! TMDB sent ${response.data.videos.results.length} videos for ID ${movie_id}`);
+        } else {
+            console.log(`[BACKEND] FAILED: TMDB ignored the append request for ID ${movie_id}`);
+        }
+
+        res.send(response.data);
+    } catch (error) {
+        console.error("[BACKEND] TMDB Error:", error.message);
+        res.status(500).json({ error: "Failed to fetch media details" });
+    }
+});
 
 
 app.get("/recc",async (req,res)=>{

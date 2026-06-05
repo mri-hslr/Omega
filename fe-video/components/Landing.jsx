@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-
+import HeroSlider from '../video-stream/src/components/HeroSlider';
 const Landing = ({ setactive, setid, selectedMedia, setSelectedMedia, setresults }) => {
   const [data, setData] = useState({ trending: [], topRated: [], loading: true });
   const [searchInput, setSearchInput] = useState("");
@@ -80,6 +80,13 @@ const Landing = ({ setactive, setid, selectedMedia, setSelectedMedia, setresults
           <div className="loader">Preparing Cinema...</div>
         ) : (
           <>
+          {data.trending.length > 0 && (
+              <HeroSlider 
+                movies={data.trending} 
+                setid={setid} 
+                setactive={setactive} 
+              />
+            )}
             <section className="shelf">
               <h2 className="shelf-title">Trending {selectedMedia === 'movie' ? 'Now' : 'Series'}</h2>
               <div className="horizontal-scroll">
