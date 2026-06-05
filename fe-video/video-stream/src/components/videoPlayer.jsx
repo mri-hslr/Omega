@@ -104,7 +104,7 @@ const Videoplayer = ({ tmdbid, setid, selectedMedia, setactive }) => {
         {/* Only render iframe after checking the database for progress */}
         {!isInitializing && (
             <iframe 
-            src={selectedMedia === 'movie' ? `https://vidsrc-embed.ru/embed/movie/${tmdbid}` : `https://vidsrc-embed.ru/embed/tv/${tmdbid}/${seasonCount}/${episodeCount}`} 
+            src={selectedMedia === 'movie' ? `https://vidking.net/embed/movie/${tmdbid}` : `https://vidking.net/embed/tv/${tmdbid}/${seasonCount}/${episodeCount}`}
             style={{ width: '100%', aspectRatio: '21/9', border: 'none' }} 
             allowFullScreen 
             />
