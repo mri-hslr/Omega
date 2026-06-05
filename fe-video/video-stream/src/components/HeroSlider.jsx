@@ -8,12 +8,9 @@ const HeroSlider = ({ movies, setid, setactive, selectedMedia }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [trailerKeys, setTrailerKeys] = useState({});
 
-  // 1. Slice the movies, then create a STABLE string of IDs. 
-  // This prevents React from getting stuck in an infinite fetch loop!
   const topFive = movies.slice(0, 5);
   const movieIdsString = topFive.map(m => m.id).join(',');
 
-  // 2. Detect Screen Size
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     handleResize();
@@ -21,7 +18,6 @@ const HeroSlider = ({ movies, setid, setactive, selectedMedia }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // 3. Fetch Real Trailers (Fixed Dependency Loop)
   useEffect(() => {
     if (topFive.length === 0) return;
 
@@ -34,19 +30,12 @@ const HeroSlider = ({ movies, setid, setactive, selectedMedia }) => {
             params: { id: movie.id, selectedMedia: selectedMedia || 'movie' } 
           });
           
-          // DEBUGGING LOGS: Let's see what the backend is actually sending!
-          console.log(`Checking backend data for: ${movie.title || movie.name}`);
-          console.log(`Did we get videos?`, res.data.videos);
-
           const videos = res.data.videos?.results || [];
           const officialTrailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube') 
                                || videos.find(v => v.site === 'YouTube');
           
           if (officialTrailer) {
-            console.log(`SUCCESS! Found key for ${movie.title}: ${officialTrailer.key}`);
             keys[movie.id] = officialTrailer.key;
-          } else {
-            console.warn(`No YouTube trailer found in the data for ${movie.title}`);
           }
         } catch (err) {
           console.error(`API Call Failed for ${movie.id}`, err);
@@ -57,15 +46,20 @@ const HeroSlider = ({ movies, setid, setactive, selectedMedia }) => {
     };
 
     fetchTrailers();
-    // THE FIX: We now depend on the stable string of IDs, not the shifting array!
   }, [movieIdsString, selectedMedia]); 
 
-  // 4. The Slideshow Timer
-  useEffect(() => {
+  // THE FIX 1: Changed from 8000 (8s) to 18000 (18s)
+useEffect(() => {
     if (topFive.length === 0) return;
+    
+    // DEBUGGING: This proves exactly when the timer starts
+    console.log("🎬 Slider timer started! Waiting 18 seconds...");
+
     const timer = setInterval(() => {
+      console.log("⏱️ 18 seconds passed! Changing slide...");
       setCurrentIndex((prevIndex) => (prevIndex + 1) % topFive.length);
-    }, 8000);
+    }, 18000); // 18000ms = 18 seconds
+    
     return () => clearInterval(timer);
   }, [topFive.length]);
 
@@ -80,20 +74,17 @@ const HeroSlider = ({ movies, setid, setactive, selectedMedia }) => {
         return (
           <div key={movie.id} className={`hero-slide ${isActive ? 'active' : ''}`}>
             
-            {/* THE FIX: ALWAYS render the high-res image as the bottom layer. 
-                This acts as a beautiful placeholder while YouTube is buffering! */}
             <img 
               src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`} 
               alt={movie.title}
               className="hero-backdrop"
             />
             
-            {/* THE FIX: Render video ON TOP of the image. 
-                Using youtube-nocookie.com to bypass Brave Browser shields! */}
             {!isMobile && youtubeKey && isActive && (
               <div className="hero-video-wrapper">
+                {/* THE FIX 2: Added playsinline=1 & disablekb=1 to aggressively block UI */}
                 <iframe
-                  src={`https://www.youtube-nocookie.com/embed/${youtubeKey}?autoplay=1&mute=1&controls=0&loop=1&playlist=${youtubeKey}&rel=0&showinfo=0&iv_load_policy=3&modestbranding=1&start=10`}
+                  src={`https://www.youtube-nocookie.com/embed/${youtubeKey}?autoplay=1&mute=1&controls=0&loop=1&playlist=${youtubeKey}&rel=0&showinfo=0&iv_load_policy=3&modestbranding=1&start=10&playsinline=1&disablekb=1`}
                   title="Trailer Background"
                   allow="autoplay; encrypted-media; fullscreen"
                   frameBorder="0"
@@ -109,12 +100,7 @@ const HeroSlider = ({ movies, setid, setactive, selectedMedia }) => {
               <p className="hero-overview">
                 {movie.overview?.length > 150 ? movie.overview.substring(0, 150) + "..." : movie.overview}
               </p>
-              
-              <div className="hero-buttons">
-                <button className="hero-play-btn" onClick={() => { setid(movie.id); setactive('player'); }}>
-                  ▶ Play Now
-                </button>
-              </div>
+              {/* THE FIX 3: Completely removed the "Play Now" button block from here */}
             </div>
           </div>
         );
