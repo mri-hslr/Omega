@@ -3,7 +3,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import api from '../api/axiosInstance';
 import '../index.css';
 import { AuthContext } from '../context/AuthContext';
-
+import HeroSlider from './HeroSlider';
 const Landing = ({ setactive, setid, selectedMedia, setSelectedMedia, setresults }) => {
   const { user } = useContext(AuthContext); 
   
@@ -131,6 +131,14 @@ const Landing = ({ setactive, setid, selectedMedia, setSelectedMedia, setresults
           <div className="loader">Preparing Cinema...</div>
         ) : (
           <>
+          {data.trending.length > 0 && (
+              <HeroSlider 
+                movies={data.trending} 
+                setid={setid} 
+                setactive={setactive} 
+                selectedMedia={selectedMedia}
+              />
+            )}
             <section className="shelf">
               <h2 className="shelf-title">Trending {selectedMedia === 'movie' ? 'Now' : 'Series'}</h2>
               <div className="horizontal-scroll">

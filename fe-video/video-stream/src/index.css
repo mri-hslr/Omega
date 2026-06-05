@@ -378,3 +378,167 @@ html, body {
   height: 100%;
   border: none;
 }
+/* =========================================
+   8. HERO SLIDER (Netflix Style)
+   ========================================= */
+.hero-slider-container {
+  position: relative;
+  width: 100vw;
+  height: 80vh; /* Takes up 80% of the screen height */
+  margin-left: -4vw; /* Pulls it out of the main-content padding */
+  margin-right: -4vw;
+  margin-top: -100px; /* Pulls it up under the transparent navbar */
+  margin-bottom: 40px;
+  overflow: hidden;
+  background: #000;
+}
+
+.hero-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out; /* The smooth crossfade */
+  pointer-events: none; /* Prevents hidden slides from blocking clicks */
+}
+
+.hero-slide.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.hero-backdrop {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.05); /* Slight zoom so we can animate it */
+  transition: transform 7s linear; /* Slowly zooms in while active */
+}
+
+.hero-slide.active .hero-backdrop {
+  transform: scale(1); /* The slow zoom effect */
+}
+
+/* The dark gradient that blends the image into the black background */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    var(--bg-color) 0%,
+    rgba(5, 5, 5, 0.4) 50%,
+    rgba(5, 5, 5, 0.8) 100%
+  );
+}
+
+.hero-content {
+  position: absolute;
+  bottom: 15%;
+  left: 5%;
+  max-width: 600px;
+  z-index: 10;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 900;
+  margin: 0 0 15px 0;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+}
+
+.hero-overview {
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: #ddd;
+  margin-bottom: 25px;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+}
+
+.hero-play-btn {
+  background: white;
+  color: black;
+  border: none;
+  padding: 12px 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.hero-play-btn:hover {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* The dots at the bottom */
+.hero-indicators {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 10;
+}
+
+.indicator-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.indicator-dot.active {
+  background: white;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  .hero-slider-container {
+    height: 60vh;
+  }
+  .hero-title {
+    font-size: 2rem;
+  }
+  .hero-overview {
+    font-size: 0.9rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Limits text to 3 lines on mobile */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+/* =========================================
+   9. HERO VIDEO SCALING RULES
+   ========================================= */
+.hero-video-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100vw;
+  height: 56.25vw; /* Enforces 16:9 ratio dynamically relative to viewport width */
+  min-height: 80vh;
+  min-width: 142.22vh; /* Enforces 16:9 ratio dynamically relative to viewport height */
+  transform: translate(-50%, -50%); /* Centers the oversized video perfectly */
+  z-index: 1;
+  pointer-events: none; /* Disables any user clicks interacting with the YouTube player directly */
+}
+
+.hero-video-iframe {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.15); /* Scales up slightly to completely hide YouTube's top black bars */
+}
+
+/* Ensure the text details sit safely over top of the video container layers */
+.hero-content {
+  z-index: 5;
+}
+.hero-overlay {
+  z-index: 2;
+}
